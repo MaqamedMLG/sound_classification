@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %} Edit Your Profile {% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
+
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 75vh;
+        padding: 0 20px;
+    }
+    .card {
+        background: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 3rem;
+        max-width: 500px;
+        margin: auto;
+    }
+    .card-body {
+        padding: 3rem;
+    }
+    .card-title {
+        font-family: 'Open Sans', sans-serif;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-label {
+        font-weight: 600;
+        font-family: 'Open Sans', sans-serif;
+    }
+    .form-control {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+    }
+    .input-group-text {
+        background: #eeeeee;
+        border: 1px solid #ced4da;
+        border-radius: 0.5rem 0 0 0.5rem;
+    }
+    .btn-primary {
+        background: #5cb85c;
+        border: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+        color: white;
+        width: 100%;
+        transition: background-color 0.3s ease;
+        font-family: 'Open Sans', sans-serif;
+    }
+    .btn-primary:hover {
+        background: #489448;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-3 mb-5 rounded">
+        <div class="card-body">
+            <h1 class="card-title mb-4">EDIT YOUR PROFILE</h1>
+            <form method="POST">
+                <div class="form-group mb-3">
+                    <label for="firstName" class="form-label">Your name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-user"></i></span>
+                        <input type="text" class="form-control form-control-lg" id="firstName" name="firstName" value="{{ user.firstName }}" placeholder="Type new name">
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="email" class="form-label">Your email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" value="{{ user.email }}" placeholder="Type new email">
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password" class="form-label">New Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Type new password">
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

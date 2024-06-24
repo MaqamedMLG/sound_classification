@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+<style>
+        
+    .container, .container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+    .header-text {
+        font-family: 'Roboto Flex', sans-serif;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #b3c6e3;
+        text-shadow: 2px 2px 4px #000000;
+        text-align: center;
+        margin-top: 1.5rem;
+        margin-bottom: 0.1rem;
+    }
+    
+    .how-it-works{
+        font-family: 'Roboto Flex', sans-serif;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #86aff0;
+        text-shadow: 2px 2px 4px #000000;
+        text-align: center;
+        margin-top: 1.5rem;
+        margin-bottom: 0.1rem;     
+    }
+
+    .info-text {
+        font-family: 'Josefin Sans', sans-serif;
+        font-size: 1rem;
+        line-height: 1.;
+        color: #D1E8FF;
+        background-color: transparent;
+        padding: 0.5rem;
+        border-radius: 10px;
+        box-shadow: none;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0 auto;
+        position: relative;
+        text-align: center;
+    }
+    
+    .images-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    .process-image {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        border-radius: 6px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .process-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+    
+    .how-it-works-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .image-text-wrapper {
+        width: 30%;
+        margin: 0;
+        text-align: center;
+    }
+
+    .image-description {
+        color: #d8ebea;
+        font-family: 'Great Vibes', cursive;
+        font-size: 1.5rem;
+        margin-bottom: 9px;
+        display: block;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    }
+    
+    .how-it-works-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .info-side {
+        flex: 1;
+        padding-right: 80px;
+        padding-left: 0;
+        margin-left: 0;
+    }
+    
+    .image-side {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding-left: 10rem;
+    }
+
+    .how-it-works-image {
+        width: 110%;
+        max-width: 615px;
+        height: auto;
+        border-radius: 6px;
+        margin-bottom: 30px;
+        }
+    
+    .info-paragraph{
+        margin-top: 10px;
+        color: white;
+        max-width: 900px;
+        font-family: 'Josefin Sans', sans-serif;
+    }
+    
+</style>
+
+<div class="container-fluid">
+    <h1 class="header-text">MLG Sound: Instant Recognition of Environmental Sounds Around You</h1>
+    <div class="info-text">
+        Your instant guide to the world's sounds! Just upload an audio clip, and in moments, we'll tell you what's making those sounds, from city buzz to nature's whispers. It's easy, fast, and fun – like having a sound detective in your pocket. Discover the soundtrack of your surroundings with MLG Sound!
+    </div>
+
+    <div class="images-container">
+        <div class="image-text-wrapper">
+            <span class="image-description">upload your audio</span>
+            <img src="{{ url_for('static', filename='photo1.png') }}" alt="Upload your audio" class="process-image">
+        </div>
+
+        <div class="image-text-wrapper">
+            <span class="image-description">wait for the analysis</span>
+            <img src="{{ url_for('static', filename='photo2.png') }}" alt="Wait for analysis results" class="process-image">
+        </div>
+
+        <div class="image-text-wrapper">
+            <span class="image-description">see the audio results</span>
+            <img src="{{ url_for('static', filename='photo3.png') }}" alt="See the audio results" class="process-image">
+        </div>
+    </div>
+</div>
+
+<div class="how-it-works">
+    <h4 style="color: white; text-align: center; font-size: 2.5rem; margin-top: 50px;">HOW IT WORKS?</h4>
+</div>
+
+<div class="how-it-works-container">
+    <div class="row">
+        <div class="col-md-6 info-side">
+            <p class="info-paragraph">
+                The system utilizes the ESC-50 dataset, a comprehensive collection of 2,000 environmental sound recordings, to accurately classify different types of sounds. Each sound clip in the dataset is five seconds long and meticulously categorized into 50 classes across five major categories — ranging from natural soundscapes to human noises and urban sounds.<br /> <br /> It learns to identify intricate patterns and characteristics specific to each sound class through a series of convolutional layers. This approach enables the model to understand and distinguish between the fine details of different environmental sounds, from the gentle sprinkle of rain to the distinctive singing of birds.
+            </p>
+        </div>
+
+        <div>
+            <img src="{{ url_for('static', filename='photo5.png') }}" alt="Process Explanation" class="how-it-works-image">
+        </div>
+    </div>
+</div>
+{% endblock %}

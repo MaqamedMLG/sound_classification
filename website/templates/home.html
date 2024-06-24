@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+
+{% block title %} 
+  My view 
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Hello, <span class="user">{{ user.firstName }}</span></h1>
+            <p>Simply upload your audio file on our platform, and witness the magic in real time. Our advanced audio recognition technology will immediately begin to process your file, ensuring a seamless and efficient experience from start to finish!</p>
+            <form method="post" id="submitForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input accept=".mp3, .wav, .flac" type="file" class="form-control" id="inputFile" name="inputFile">
+                </div>
+                <button type="submit" id="uploadButton" class="btn btn-primary">Upload Sound</button>
+            </form>
+            <div id="tablediv"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="uploaded-sounds-section">
+    <h3>YOUR LAST UPLOADS</h3>
+    <div class="uploads-list">
+        <ul class="list-group">
+            {% for audio in user.audio_files | reverse %}
+            <li class="list-group-item d-flex justify-content-between">
+                <div class="audio-name">{{ audio.name }}</div>
+                <div class="badge bg-primary rounded-pill">{{ audio.date_created.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                <form method="post" action="/delete/{{ audio.id }}" class="delete-audio-form">
+                    <button type="submit" class="btn btn-danger btn-sm">&#128465;</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="clear-history-footer">
+        <form method="post" action="/delete-all-audios" class="delete-all-form">
+            <button type="submit" class="btn btn-danger">clear history data</button>
+        </form>
+    </div>
+</div>
+    </div>
+        <div id="tablediv"></div>
+</div>
+    <!-- Add this below the existing div -->
+<div id="spectrogramdiv" class="spectrogram-container">
+    <img id="spectrogramImage" src="" alt="Spectrogram will be displayed here." style="max-width: 100%; display: none;">
+</div>
+    
+<div id="waveformdiv" class="waveform-container" style="text-align: center;">
+    <img id="waveformImage" src="" alt="Waveform will be displayed here." style="max-width: 100%; display: none;">
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var uploadButton = document.getElementById('uploadButton');
+        uploadButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            var fileInput = document.getElementById('inputFile');
+            var file = fileInput.files[0];
+
+            document.getElementById('tablediv').innerHTML = '';
+
+            if (!file) {
+                document.getElementById('tablediv').innerHTML = '<div class="alert alert-danger" role="alert">Please choose an audio file</div>';
+                return;
+            }
+            if (file.type.split('/')[0] !== 'audio') {
+                document.getElementById('tablediv').innerHTML = '<div class="alert alert-danger" role="alert">Please select a correct audio file (mp3, wav, flac)</div>';
+                return;
+            }
+            if (file.size > 10485760) { // 10MB
+                document.getElementById('tablediv').innerHTML = '<div class="alert alert-danger" role="alert">This file is too large. Please select an audio file less than 10MB</div>';
+                return;
+            }
+            uploadButton.disabled = true;
+            document.getElementById('tablediv').innerHTML = '<table style="border-collapse: separate;border-spacing:20px;"><tr><td><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></td><td><div class="alert alert-primary" role="alert">We are analyzing the sound. Please wait!</div></td></tr></table>';
+
+            var formData = new FormData(document.getElementById('submitForm'));
+
+            fetch('/uploadajax', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                let resdis = "<table class=\"table result\"><thead><th scope=\"col\">#</th><th scope=\"col\">Start (s)</th><th scope=\"col\">End (s)</th><th scope=\"col\">Detected Sound</th><th scope=\"col\">Accuracy</th><th scope=\"col\">Duration</th><th scope=\"col\">Type</th><th scope=\"col\">Size</th></thead><tbody>";
+                let sno = 1;
+                for (let pred of data.predictions) {
+                    let start = pred.start.toFixed(2);
+                    let end = pred.end.toFixed(2);
+                    let label = pred.label;
+                    let confidence = (pred.confidence * 100).toFixed(2);
+                    let fileSize = (data['size'] / 1024).toFixed(2);
+                    let audioDuration = data['duration'].toFixed(2);
+                    let audioType = data['type'];
+                    resdis += `<tr><th scope="row">${sno}</th><td>${start}</td><td>${end}</td><td>${label}</td><td>${confidence}%</td><td>${audioDuration} sec</td><td>${audioType}</td><td>${fileSize} KB</td></tr>`;
+                    sno++;
+                }
+                resdis += "</tbody></table>";
+                document.getElementById('tablediv').innerHTML = resdis;
+
+                if (data.waveform) {
+                    let waveformImage = document.getElementById('waveformImage');
+                    waveformImage.src = data.waveform;
+                    waveformImage.style.display = 'block';
+                }
+
+                if (data.spectrogram) {
+                    let spectrogramImage = document.getElementById('spectrogramImage');
+                    spectrogramImage.src = data.spectrogram;
+                    spectrogramImage.style.display = 'block';
+                }
+
+                uploadButton.disabled = false;
+            })
+            .catch(error => {
+                document.getElementById('tablediv').innerHTML = `<div class="alert alert-danger" role="alert">${error}</div>`;
+                uploadButton.disabled = false;
+            });
+        });
+    });
+</script>
+
+
+
+<style> 
+    .clear-history-footer {
+    position: sticky;
+    bottom: 0;
+    background: #212020;
+    padding: 10px;
+}
+    
+    .container-fluid {
+    max-width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+    .col-md-8 {
+    margin-top: 90px;
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    }
+    
+    .col-md-4 {
+    margin-top: 30px;
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    }
+
+    .uploaded-sounds-section {
+    position: relative;
+    background-color: #212020;
+    padding: 15px;
+    border-radius: 9px;
+    margin-top: 20px;
+    padding-bottom: 60px;
+}
+    
+    .clear-history-footer {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    }
+
+    .uploaded-sounds-section h3 {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 10px;
+    }
+
+    .uploaded-sounds-section .list-group {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    }
+
+    .uploaded-sounds-section .list-group-item {
+    background-color: #2c2c2c;
+    color: #ffffff;
+    border: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+    }
+
+    .uploaded-sounds-section .audio-name {
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+    
+    .uploads-list {
+    max-height: 380px;
+    overflow-y: auto;
+    }
+
+    .uploaded-sounds-section .audio-date {
+    flex: none;
+    margin-left: 10px;
+    }
+
+    .delete-audio-form, .delete-all-form {
+    margin-left: 10px;
+    }
+    
+    .delete-all-form .btn-danger {
+    width: 90%;
+    padding: 5px;
+    margin: 0 auto;
+    font-size: 15px;
+    border-radius: 5px;
+    align-content: center;
+    }
+    
+    h3{
+        text-align: center;
+    }
+    
+    .delete-all-container {
+    text-align: center;
+    margin-top: 10px;
+    }
+    
+    .uploaded-sounds-title {
+    color: #ffffff;
+    margin-bottom: 5px;
+    }
+
+    .uploaded-sounds-card {
+    max-height: 350px;
+    overflow-y: auto;
+    border: 1px solid #333;
+    }
+
+    .list-group-item {
+    background-color: #2c2c2c;
+    color: #ffffff;
+    border: 1px solid #444;
+    }
+
+    .badge {
+    background-color: #0062cc;
+    } 
+    
+    .content-wrapper {
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .left-section {
+        margin-top: 70px;
+        width: 70%;
+        margin-right: 145px;
+    }
+    
+    .right-section {
+        width: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    p{
+        color: white;
+        font-style: oblique;
+        font-size: 20px;
+    }
+    
+    h1{
+        color: white;
+        font-style: initial;
+    }
+    
+    .table.result, .table.result th, .table.result td {
+    color: white;
+    }
+    
+    #uploadButton{
+        width: 730px;
+        height: 50px;
+        margin-bottom: 40px;
+    }
+
+    input[type="file"] {
+    width: 100%;
+    color: white;
+    background-color: #758894;
+    border-color: #80919c;
+    margin-bottom: 10px;
+    }
+    
+    #spectrogramdiv {
+    text-align: center;
+    margin: 10px 0;
+    }
+
+    #spectrogramImage {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    }
+    
+    #waveformdiv {
+    text-align: center;
+    margin: 10px 0;
+    }
+
+    #waveformImage {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    }
+</style>
+{% endblock %}

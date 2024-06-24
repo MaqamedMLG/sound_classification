@@ -1,0 +1,451 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Admin
+{% endblock %}
+
+{% block content %}
+<style>
+    .greeting-container {
+        text-align: left;
+    }
+    
+    table {
+        margin: auto;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .actions-header {
+        width: 200px;
+        text-align: center;
+    }
+    
+    th {
+        border: 2px solid #ddd;
+        padding: 6px;
+        text-align: left;
+    }
+    
+    td {
+        border: 2px solid #ddd;
+        padding: 6px;
+        text-align: left;
+    }
+    
+    .header{
+        text-align: center;
+    }
+    
+    thead tr {
+        background-color: #674494;
+        color: white;
+    }
+    
+    tbody tr:nth-child(odd) {
+        background-color: #bcc2bc;
+        color: black;
+    }
+    
+    tbody tr:nth-child(even) {
+        background-color: #b3b6bd;
+        color: black;
+    }
+    
+    tbody tr:hover {
+        background-color: #95989e;
+    }
+    
+    .delete-btn {
+        color: white;
+        background-color: #750606;
+        padding: 6px 9px;
+        text-decoration: none;
+        border: 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 20px;
+        margin-right: 25px;
+    }
+    
+    .delete-btn:hover {
+        color: white;
+    }
+    
+    .lock-btn {
+        color: white;
+        background-color: #5765ba;
+        padding: 6px 6px;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 20px;  
+        margin-right: 25px;
+    }
+    
+    .unlock-btn {
+        color: white;
+        background-color: #5765ba;
+        padding: 6px 6px;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 20px;  
+        margin-right: 20px;
+    }
+    
+    .unlock-btn:hover {
+        color: white;
+    }
+    
+    
+    .lock-btn:hover {
+        color: white;
+    }
+    
+    .update-btn {
+        color: white;
+        background-color: #b88f09;
+        padding: 6px 6px;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 20px;  
+        margin-right: 20px;
+    }
+    
+    .update-btn:hover {
+        color: white;
+    }
+        
+    .icon-bin {
+        font-style: normal;
+    }
+    
+    h2 {
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .modal {     
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #515f75;
+        margin: 3% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 27%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    input[type=text], input[type=email], input[type=password] {
+        width: 100%;
+        padding: 15px;
+        margin: 5px 0 22px 0;
+        display: inline-block;
+        border: none;
+        background: #f1f1f1;
+    }
+
+    input[type=text]:focus, input[type=email]:focus, input[type=password]:focus {
+        background-color: #ddd;
+        outline: none;
+    }
+
+    .btn-success {
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        opacity: 0.9;
+    }
+
+    .btn-success:hover {
+        opacity: 1;
+    }
+    
+    #searchInput{
+        margin-left: 460px;
+        width: 270px;
+        height: 35px;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        flex-grow: 1;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 1rem;
+        background-color: #d3dded;
+    }
+    
+    #searchbutton{
+        background-color: #4CAF50;
+        color: white;
+        padding: 5px 7px;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    #searchbutton:hover{
+        background-color: #348038;
+    }
+    
+    #clearbutton{
+        background-color: #f44336;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    #clearbutton:hover{
+        background-color: #c73126;
+    }
+    
+    .pagination {
+        justify-content: flex-end;
+        padding: 10px;
+        margin-top: 5px;
+        list-style: none;
+    }
+
+    .pagination a {
+        color: #337ab7;
+        background-color: #ffffff;
+        border: 1px solid;
+        padding: 5px 10px;
+        text-decoration: none;
+        margin: 0 5px;
+        border-radius: 5px;
+        transition: background-color 0.2s;
+    }
+
+    .pagination a:hover {
+        background-color: #e6eaed;
+    }
+    
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #ddd;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    
+    .dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+    
+    .dropdown-toggle{
+        background-color: #f59842;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .dropdown-toggle:hover {
+        background-color: #c97c34;
+    }
+</style>
+
+<div class="greeting-container">
+    <h1>Administrator's portal</h1>
+    <h2>LIST OF THE USERS</h2>
+    <button type="button" onclick="openModal()" class="btn btn-primary">+ New User</button>
+    <input type="text" id="searchInput" placeholder="Search by ID, Name, Email" value="{{ search_query }}">
+    <button onclick="search()" id="searchbutton">&#128269;</button>
+    <div class="dropdown">
+  <button class="dropdown-toggle" type="button">
+    Sort by
+  </button>
+  <div class="dropdown-content">
+    <a href="#" onclick="sortBy('name')">Name A-Z</a>
+    <a href="#" onclick="sortBy('date')">Date registered</a>
+      <a href="#" onclick="sortBy('uploads')">Uploads</a>
+  </div>
+</div>
+
+    <button onclick="clearSearch()" id="clearbutton">&#8998; Clear filters</button>
+    
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>New User</h2>
+    <form action="{{ url_for('auth.create_user') }}" method="POST">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Enter name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="Enter email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn btn-success">Create User</button>
+    </form>
+  </div>
+
+</div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="header">ID</th>
+                    <th class="header">Date</th>
+                    <th class="header">Name</th>
+                    <th class="header">Email address</th>
+                    <th class="header">Number of uploads</th>
+                    <th class="header">Types of uploads</th>
+                    <th class="actions-header">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ user.firstName }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ uploads_count[user.id] }}</td>
+                    <td>
+                        {% for mime_type in uploads_types[user.id] %}
+                            <span class="audio-type">{{ mime_type }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('auth.delete_user', id=user.id) }}" class="delete-btn">
+                            <span class="icon-bin">&#128465;</span>
+                        </a>     
+                        <a href="{{ url_for('auth.update_user', id=user.id) }}" class="update-btn">
+                            <span class="icon-bin">&#9998;</span>
+                        </a>
+                        
+                        {% if user.locked %}
+                        <a href="{{ url_for('auth.unlock_user', id=user.id) }}" class="unlock-btn">
+                            <span class="icon-bin">&#128275;</span>
+                        </a>
+                {% else %}
+                        <a href="{{ url_for('auth.lock_user', id=user.id) }}" class="lock-btn">
+                            <span class="icon-bin">&#128274;</span>
+                        </a>
+                {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="pagination">
+    {% if pagination.has_prev %}
+        <a href="{{ url_for('auth.admin_page', page=pagination.prev_num) }}">&laquo; Previous</a>
+    {% endif %}
+    {% if pagination.has_next %}
+        <a href="{{ url_for('auth.admin_page', page=pagination.next_num) }}">Next &raquo;</a>
+    {% endif %}
+    </div>   
+</div>
+
+<script>
+var modal = document.getElementById("myModal");
+
+function openModal() {
+  modal.style.display = "block";
+}
+    
+function sortBy(column) {
+    var currentSearch = document.getElementById("searchInput").value;
+    window.location.href = `/admin?search=${currentSearch}&sort=${column}`;
+}
+    
+function sortBy(column) {
+    var currentSearch = document.getElementById("searchInput").value;
+    window.location.href = `/admin?search=${currentSearch}&sort=${column}`;
+}
+
+    
+function search() {
+    var input = document.getElementById("searchInput").value;
+    window.location.href = `/admin?search=${input}`;
+}
+
+function clearSearch() {
+    window.location.href = '/admin';
+}
+
+function closeModal() {
+  modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    closeModal();
+  }
+}
+</script>
+{% endblock %}

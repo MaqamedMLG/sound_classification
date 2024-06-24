@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Edit user
+{% endblock %}
+
+{% block content %}
+<style>
+    .update-container {
+        background: #f7f7f7;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        max-width: 400px;
+        margin: 40px auto;
+        text-align: center;
+    }
+    .update-container h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+    .update-form input[type="text"],
+    .update-form input[type="email"],
+    .update-form input[type="password"] {
+        width: calc(100% - 24px);
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+    }
+    .update-btn {
+        color: white;
+        background-color: #5cb85c;
+        padding: 10px 15px;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        display: inline-block;
+        width: 100%;
+    }
+    .update-btn:hover {
+        background-color: #4cae4c;
+    }
+    label {
+        text-align: left;
+        display: block;
+        margin: 5px 0;
+        color: #666;
+    }
+</style>
+
+<div class="update-container">
+    <h2>Update User</h2>
+    <form class="update-form" action="{{ url_for('auth.update_user', id=user.id) }}" method="post">
+        <label for="firstName">Name</label>
+        <input type="text" id="firstName" name="firstName" value="{{ user.firstName }}" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}" required>
+
+        <label for="password">New Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter new password">
+
+        <button type="submit" class="update-btn">Update</button>
+    </form>
+</div>
+{% endblock %}
